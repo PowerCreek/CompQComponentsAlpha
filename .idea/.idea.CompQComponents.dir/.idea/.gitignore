@@ -1,0 +1,13 @@
+﻿# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/modules.xml
+/projectSettingsUpdater.xml
+/.idea.CompQComponents.iml
+/contentModel.xml
+# Datasource local storage ignored files
+/../../../../../../../:\Overlay3dProjects\Repos\QComponentLibrary\.idea\.idea.CompQComponents.dir\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
