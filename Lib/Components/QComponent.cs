@@ -54,7 +54,6 @@ namespace CompQComponents.Lib.Components
             Wrapper = surrogate;
             OnSet?.Invoke((surrogate as Comp)!);
         }
-        //public override QComponent<Comp> SetEvent<T>(Expression<Func<ExprItems, EventTypes>> expr, Action<T> action) => (QComponent<Comp>) base.SetEvent(expr, action);
         
         public T Perform<T>(Action<T> doThing) where T: QComponent<Comp>
         {
