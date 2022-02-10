@@ -14,10 +14,18 @@ namespace CompQComponents.Lib.Components
     public class FragmentBuilder
     {
         private int Sequence { get; set; } = 0;
+        
+        /// <summary>
+        /// FragType is used to determine how to build the Blazor component context in this class.
+        /// </summary>
         private FragType? _fragType { get; set; }
 
         public RenderTreeBuilder? _RenderBuilder { get; set; }
         
+        /// <summary>
+        /// The getter of this property auto-increments the Sequence member
+        /// in order to stay in sync with the RenderTreeBuilder of Blazor.
+        /// </summary>
         private RenderTreeBuilder? RenderBuilder
         {
             get
@@ -81,7 +89,6 @@ namespace CompQComponents.Lib.Components
 
         public FragmentBuilder AddAttribute(string key, object obj)
         {
-            
             RenderBuilder!.AddAttribute(Sequence, key, obj);
             return this;
         }
@@ -101,7 +108,7 @@ namespace CompQComponents.Lib.Components
         public void SetFragmentType(FragType fragType) => _fragType = _fragType switch
         {
             null => fragType,
-            _ => throw new Exception("Framgement type is already defined.")
+            _ => throw new Exception("Fragment type is already defined.")
         };
 
     }

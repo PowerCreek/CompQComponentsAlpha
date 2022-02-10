@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using CompQComponents.Lib.Attributes;
-using CompQComponents.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 
 namespace CompQComponents.Lib.Components
 {
@@ -107,16 +102,22 @@ namespace CompQComponents.Lib.Components
             set { }
         }
 
+        /// <summary>
+        /// Sets the reference of the Surrogate component which may need to be referenced by the internals of this class.
+        /// </summary>
+        /// <param name="surrogate"></param>
+        /// <typeparam name="T"></typeparam>
         public abstract void Set<T>(T surrogate) where T : Surrogate;
         
         public virtual int? TabIndex { get; set; }
 
         public Surrogate? Wrapper = null;
 
+        /// <summary>
+        /// Property that can be used as a generator function, or provide the IEnumerable of QComponent instances.
+        /// </summary>
         protected virtual IEnumerable<QComponent> Children { get; set; }
         public bool HasRendered = false;
-
-        public IElementRegistry? ElementRegistry;
 
         public string? Content;
 
@@ -125,6 +126,12 @@ namespace CompQComponents.Lib.Components
         
         public List<IAttributeContent>? Attributes;
 
+        /// <summary>
+        /// Creates and/or provides the IAttributeContent via Type argument T.
+        /// Attributes show up in the Tag space of elements within the dom.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T GetAttribute<T>() where T : class, IAttributeContent, new()
         {
             if((Attributes ??= new()).All(e => e.GetType() != typeof(T)))
@@ -137,18 +144,17 @@ namespace CompQComponents.Lib.Components
             return (T) (Attributes??=new List<IAttributeContent>()).Find(e => e.GetType() == typeof(T))!;
         }
         
-        public HashSet<EventCallbackItem>? EventContainer;
+        /// <summary>
+        /// Contains all events attached to an Event Listener.
+        /// </summary>
+        public HashSet<EventCallbackItem>? EventContainer = null;
 
-        public void AddEvent(params EventCallbackItem[]? eventItem)
-        {
-            if (eventItem == null) return;
-            foreach (var item in eventItem)
-            {
-                EventContainer.SetEvent(item);
-            }
-        }
-        
-
+        /// <summary>
+        /// Generates the RenderFragment from the type passed in.
+        /// comp should be a type that extends ComponentBase.
+        /// </summary>
+        /// <param name="comp"></param>
+        /// <returns></returns>
         public RenderFragment BuildSelf(Type comp)
         {
             return fbuilder =>
@@ -157,6 +163,8 @@ namespace CompQComponents.Lib.Components
                     {
                         surr.Open(comp);
                         if(Key != null) surr._RenderBuilder.SetKey(Key);
+                        
+                        //This sets the parameter property of QComponent to this (this class instance).
                         surr.AddAttribute(nameof(Surrogate.QComponent), this);
                         return surr;
                     }
@@ -164,6 +172,12 @@ namespace CompQComponents.Lib.Components
             };
         }
         
+        
+        /// <summary>
+        /// Generates the RenderFragment from all properties of the QComponent.
+        /// If there are any properties of this class, they are set in the tag space of the element.
+        /// </summary>
+        /// <returns></returns>
         public RenderFragment BuildElement()
         {
             
@@ -173,7 +187,9 @@ namespace CompQComponents.Lib.Components
                 {
                     frag.Open(Tag);
                     var props = this.GetType().GetProperties();
-
+                    
+                    //Iterate over every property within this class, or subclasses,
+                    //and add them to the attributes section of the dom element.
                     foreach (var prop in props)
                     {
                         if (prop.GetValue(this) is { } val)
@@ -182,6 +198,8 @@ namespace CompQComponents.Lib.Components
 
                     if (Attributes != null)
                     {
+                        //Iterate over every Attribute within the Attributes member,
+                        //and add them to the attributes section of the dom element by AttributeName and AttributeContent
                         foreach (var attr in Attributes)
                         {
                             if (attr.AttributeContent != null)
@@ -193,6 +211,8 @@ namespace CompQComponents.Lib.Components
 
                     if (EventContainer != null)
                     {
+                        //Iterate over every EventCallbackItem and set the referece of
+                        //the EventListeners as values of the Event name.
                         foreach (var eventCallbackItem in EventContainer)
                         {
                             frag.AddAttribute(eventCallbackItem.EventName, eventCallbackItem.SetCallback!);
@@ -201,13 +221,15 @@ namespace CompQComponents.Lib.Components
 
                     if (Content != null)
                     {
+                        //Add the content member as content of this dom element.
                         frag.AddContent(Content);
                     }
 
+                    //Iterate over every child element and append it as content of this dom element.
                     foreach (var child in Children??Array.Empty<QComponent>())
                     {
                         if (child is null) continue;
-                        frag.AddContent(child.BuildSelf(child.WrapperType()));
+                        frag.AddContent(child!.Wrapper?.RequestContent ?? child!.BuildSelf(child.WrapperType()));
                     }
 
                     return frag;

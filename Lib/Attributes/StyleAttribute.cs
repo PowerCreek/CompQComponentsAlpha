@@ -5,15 +5,26 @@ using System.Threading.Tasks;
 
 namespace CompQComponents.Lib.Attributes
 {
+    
+    /// <summary>
+    /// Data manipulation for handing local styles of an element.
+    /// </summary>
     public class StyleAttribute : IAttributeContent<StyleAttribute>
     {
         public string AttributeName => "style";
         public Dictionary<string,string>? StyleMap => _styleMap;
+        
         private Dictionary<string,string>? _styleMap;
         private Dictionary<string,string> StyleMapOrNew => _styleMap ??= new Dictionary<string,string>();
         
         public string? AttributeContent => StyleMap is null? null : string.Join("; ", StyleMap!.Select(e => $"{e.Key}: {e.Value}"));
 
+        /// <summary>
+        /// Adds an expanded enumerable of styles as tuples (string,string)  to an element's style collection.
+        /// Use the JSInterop with this to ensure you do not need to re-render the parent component
+        /// to observe the modification.
+        /// <param name="styles"></param>
+        /// <returns></returns>
         public StyleAttribute WithStyle(params (string key, string value)[]? styles)
         {
             Parallel.ForEach(styles ??= Array.Empty<(string, string)>(),
@@ -25,6 +36,12 @@ namespace CompQComponents.Lib.Attributes
             return this;
         }
 
+        /// <summary>
+        /// Removes an expanded enumerable of styles by style key strings from an element's style collection.
+        /// Use the JSInterop with this to ensure you do not need to re-render the parent component
+        /// to observe the modification.
+        /// <param name="styles"></param>
+        /// <returns></returns>
         public StyleAttribute WithoutStyle(params string[] styles)
         {
             foreach (var s in styles)
@@ -34,8 +51,5 @@ namespace CompQComponents.Lib.Attributes
 
             return this;
         }
-
-        public void Combine<T>(T attributeContent) =>
-            WithStyle((attributeContent as StyleAttribute)!.StyleMapOrNew.Select(e=>(e.Key, e.Value)).ToArray());
     }
 }

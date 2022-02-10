@@ -4,6 +4,11 @@ using System.Linq;
 
 namespace CompQComponents.Lib.Attributes
 {
+    
+    /// <summary>
+    /// Utility class to provide an elegant way of setting up the element attributes
+    /// using chain calls.
+    /// </summary>
     public class AttributeBuilder
     {
         public List<IAttributeContent> Values { get; set; } = new List<IAttributeContent>();

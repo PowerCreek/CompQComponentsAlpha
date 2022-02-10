@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace CompQComponents.Lib.Attributes
 {
+    
+    /// <summary>
+    /// Data manipulation for handing local classes of an element.
+    /// </summary>
     public class CssAttribute : IAttributeContent<CssAttribute>
     {
         public string AttributeName => "class";
@@ -17,6 +19,13 @@ namespace CompQComponents.Lib.Attributes
 
         public string? AttributeContent => ClassesMap is null ? null : string.Join(" ", ClassesMap!);
 
+        /// <summary>
+        /// Adds a class to an element's class collection.
+        /// Use the JSInterop with this to ensure you do not need to re-render the parent component
+        /// to observe the modification.
+        /// </summary>
+        /// <param name="classes"></param>
+        /// <returns></returns>
         public CssAttribute WithClass(params string[]? classes)
         {
             if (classes == null || classes.Length == 0) return this;
@@ -31,6 +40,13 @@ namespace CompQComponents.Lib.Attributes
             return this;
         }
 
+        /// <summary>
+        /// Removes a class to an element's class collection.
+        /// Use the JSInterop with this to ensure you do not need to re-render the parent component
+        /// to observe the modification.
+        /// </summary>
+        /// <param name="classes"></param>
+        /// <returns></returns>
         public CssAttribute WithoutClass(params string[]? classes)
         {
             if (classes == null || classes.Length == 0) return this;
@@ -42,8 +58,5 @@ namespace CompQComponents.Lib.Attributes
 
             return this;
         }
-        
-        public void Combine<T>(T attributeContent) => 
-            WithClass((attributeContent as CssAttribute)!.ClassMapOrNew.Select(e => e).ToArray());
     }
 }

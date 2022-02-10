@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace CompQComponents.Lib.Components
 {
+    /// <summary>
+    /// Provides all of the Event Listeners which the dom provides.
+    /// </summary>
     public class EventItems
     {
         public static EventCallbackItem<MouseEventArgs> OnMouseDown => CreateDefaultItem<MouseEventArgs>();
@@ -19,6 +20,13 @@ namespace CompQComponents.Lib.Components
         
         public static EventCallbackItem<ChangeEventArgs> OnInput => CreateDefaultItem<ChangeEventArgs>();
 
+        /// <summary>
+        /// Creates the default Event Listener which also includes its respective dom event name.
+        /// The name is its name in this project context, lowercase.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <typeparam name="Args"></typeparam>
+        /// <returns></returns>
         private static EventCallbackItem<Args> CreateDefaultItem<Args>([CallerMemberName]string propertyName="") where Args: EventArgs =>
             new()
             {
@@ -28,7 +36,7 @@ namespace CompQComponents.Lib.Components
 
     public static class EventItemsExt
     {
-        public static EventCallbackItem Add<T>(this EventCallbackItem<T> source, Action<EventArgs> action) where T: EventArgs
+        public static EventCallbackItem AddEventListener<T>(this EventCallbackItem<T> source, Action<EventArgs> action) where T: EventArgs
         {
             return source.SetCallBackAction<EventArgs>(action);
         }
