@@ -88,7 +88,7 @@ namespace CompQComponents.Lib.Components
         }
 
         /// <summary>
-        /// Bringing the visibibility of StateHasChanged to public. (Which, in my opinion, should have been the default visibility of the base framework anyway...
+        /// Bringing the visibibility of StateHasChanged to public. (Which, in my opinion, should have been the default visibility of the base framework anyway...)
         /// </summary>
         public void ChangeState()
         {

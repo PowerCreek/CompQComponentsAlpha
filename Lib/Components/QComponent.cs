@@ -6,39 +6,6 @@ using Microsoft.AspNetCore.Components;
 
 namespace CompQComponents.Lib.Components
 {
-
-    public class EventCallbackItem<Args> : EventCallbackItem where Args : EventArgs
-    {
-        public Action<Args> Callback => CallbackAction!;
-    }
-
-    public class EventCallbackItem
-    {
-        public string EventName { get; init; } = null!;
-
-        protected Action<EventArgs>? CallbackAction { get; set; }
-
-        public Action<EventArgs>? SetCallback;
-
-        public EventCallbackItem SetCallBackAction<T>(Action<EventArgs> t) where T: EventArgs
-        {
-            SetCallback += t;
-            return this;
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (obj is null) return false;
-            if (obj == this) return true;
-            return obj.GetType() == this.GetType() && EventName.Equals((obj as EventCallbackItem)?.EventName);
-        }
-
-        public override int GetHashCode()
-        {
-            return EventName!.GetHashCode();
-        }
-    }
-    
     public abstract class QComponent<Comp> : QComponent where Comp : Surrogate
     {
         public Type SurrogateType = typeof(Comp);
@@ -172,16 +139,13 @@ namespace CompQComponents.Lib.Components
             };
         }
         
-        
         /// <summary>
         /// Generates the RenderFragment from all properties of the QComponent.
         /// If there are any properties of this class, they are set in the tag space of the element.
         /// </summary>
         /// <returns></returns>
-        public RenderFragment BuildElement()
-        {
-            
-            return fbuilder =>
+        public RenderFragment BuildElement() =>
+            fbuilder =>
             {
                 FragmentBuilder.Create(fbuilder, frag =>
                 {
@@ -204,7 +168,7 @@ namespace CompQComponents.Lib.Components
                         {
                             if (attr.AttributeContent != null)
                             {
-                               frag.AddAttribute(attr.AttributeName, attr.AttributeContent);
+                                frag.AddAttribute(attr.AttributeName, attr.AttributeContent);
                             }
                         }
                     }
@@ -235,7 +199,6 @@ namespace CompQComponents.Lib.Components
                     return frag;
                 });
             };
-        }
     }
 
     public static class QCompnentExt
